@@ -1,0 +1,74 @@
+pipeline {
+  agent any
+  stages {
+    stage('Start') {
+      steps {
+        sh 'printenv'
+      }
+    }
+    stage('Compile') {
+       steps {
+         dir(path: 'demoapp') {
+           sh 'mvn clean'
+           sh 'mvn compile'
+           sh 'mvn package'
+         }
+       }
+    }   
+    stage('Docker Build') {
+       steps {
+         sh 'docker image prune -f'
+         sh 'docker build -t $Img_Space/$App_Name:latest .'
+         sh 'docker tag $Img_Space/$App_Name:latest $dc_server/$Img_Space/$App_Name:$Rel_Name'
+       }
+    }
+    stage('Push to Registry') {
+      steps {
+        sh 'oc login $ocp_server:$ocp_port -u $ocp_user -p $ocp_pass -n $ocp_namespace --insecure-skip-tls-verify'
+        script{
+          octoken = sh(script: 'oc whoami -t', returnStdout: true)
+        }
+        sh "docker login $dc_server -u $dc_user -p ${octoken}"
+        sh 'docker push $dc_server/$Img_Space/$App_Name:$Rel_Name'
+        sh 'docker logout $dc_server'
+      }
+    }
+    stage('OCP_Deploy') {
+      steps {
+        dir(path: 'kbdeploy/ocp4') {
+          sh 'oc delete -f deployment.yaml || true'
+          sh 'oc delete -f service.yaml || true'
+          sh 'oc delete -f ingress.yaml || true'        
+          sh 'oc create -f deployment.yaml'
+          sh 'oc create -f service.yaml'
+          sh 'oc create -f ingress.yaml'
+        }
+      }
+    }
+    stage('Logout') {
+      steps {
+        sh 'oc logout'
+      }
+    }
+  }
+  post { 
+        always { 
+            sh 'docker logout $dc_server || true'
+            sh 'oc logout || true'
+        }
+  }
+  environment {
+    scan_img = 'false'
+    ocp_server = credentials('OCP_SERVER')
+    ocp_port = '6443'
+    ocp_user = credentials('OCP_USER')
+    ocp_pass = credentials('OCP_PASS') 
+    ocp_namespace=credentials('OCP_NAMESPACE')
+    dc_user = credentials('DC_USER')
+    dc_pass = credentials('DC_PASS')
+    dc_server = credentials('DC_SERVER')  
+    Img_Space = ocp_namespace
+    App_Name = 'demoapp'
+    Rel_Name = 'latest'
+  }
+}

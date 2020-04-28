@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: demoapp-route
+  labels:
+    app: demoapp
+    release: latest
+#  annotations:
+#    nginx.ingress.kubernetes.io/rewrite-target: /  
+spec:
+  # crt and key need to upload and create a k8secret call 'ca-tls-secret' in ocp first
+  tls:
+    - hosts:
+        - demoapp-igfdemo.apps.ocp4s.ca.dst.ibm.com
+      secretName: ca-tls-secret
+  rules:
+  # FQDN name need to set in hosts file that can match with hyproxy load balancer
+  - host: demoapp-igfdemo.apps.ocp4s.ca.dst.ibm.com
+  #- host: mytest.com
+    http:
+     paths:
+     - path: /demoapp
+       backend:
+         serviceName: demoapp
+         servicePort: 9080
