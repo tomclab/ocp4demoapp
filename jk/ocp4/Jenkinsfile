@@ -67,7 +67,7 @@ pipeline {
     dc_user = credentials('DC_USER')
     dc_pass = credentials('DC_PASS')
     dc_server = credentials('DC_SERVER')  
-    Img_Space = ocp_namespace
+    Img_Space = credentials('OCP_NAMESPACE')
     App_Name = 'demoapp'
     Rel_Name = 'latest'
   }
