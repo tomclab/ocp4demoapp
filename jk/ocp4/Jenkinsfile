@@ -1,3 +1,4 @@
+def aa = 'UNKNOWN'
 pipeline {
   agent any
   stages {
@@ -19,23 +20,24 @@ pipeline {
        steps {
          sh 'docker image prune -f'
          sh 'docker build -t $Img_Space/$App_Name:latest .'
-         sh 'docker tag $Img_Space/$App_Name:latest $dc_server/$Img_Space/$App_Name:$Rel_Name'
+         sh 'docker tag $Img_Space/$App_Name:latest $pv_Docker_Reg/$Img_Space/$App_Name:$Rel_Name'
        }
     }
     stage('Push to Registry') {
       steps {
-        sh 'oc login $ocp_server:$ocp_port -u $ocp_user -p $ocp_pass -n $ocp_namespace --insecure-skip-tls-verify'
+        sh 'oc login $os_server:$os_port -u $os_user -p $os_pass -n $os_namespace --insecure-skip-tls-verify'
         script{
           octoken = sh(script: 'oc whoami -t', returnStdout: true)
         }
-        sh "docker login $dc_server -u $dc_user -p ${octoken}"
-        sh 'docker push $dc_server/$Img_Space/$App_Name:$Rel_Name'
-        sh 'docker logout $dc_server'
+        sh "docker login $pv_Docker_Reg -u $dc_user -p ${octoken}"
+        sh 'docker push $pv_Docker_Reg/$Img_Space/$App_Name:$Rel_Name'
+        sh 'docker logout $pv_Docker_Reg'
       }
     }
     stage('OCP_Deploy') {
       steps {
         dir(path: 'kbdeploy/ocp4') {
+          //sh 'oc login $os_server:$os_port -u $os_user -p $os_pass -n $os_namespace --insecure-skip-tls-verify'
           sh 'oc delete -f deployment.yaml || true'
           sh 'oc delete -f service.yaml || true'
           sh 'oc delete -f ingress.yaml || true'        
@@ -53,21 +55,21 @@ pipeline {
   }
   post { 
         always { 
-            sh 'docker logout $dc_server || true'
+            sh 'docker logout $pv_Docker_Reg || true'
             sh 'oc logout || true'
         }
   }
   environment {
     scan_img = 'false'
-    ocp_server = credentials('OCP_SERVER')//api.ocp4ignite.ca.dst.ibm.com
-    ocp_port = '6443'
-    ocp_user = credentials('OCP_USER')
-    ocp_pass = credentials('OCP_PASS') 
-    ocp_namespace=credentials('OCP_NAMESPACE')
+    os_server = 'https://api.ocp4ignite.ca.dst.ibm.com'
+    os_port = '6443'
+    os_user = credentials('OCP_USER')
+    os_pass = credentials('OCP_PASS')
     dc_user = credentials('DC_USER')
     dc_pass = credentials('DC_PASS')
-    dc_server = credentials('DC_SERVER')  
-    Img_Space = credentials('OCP_NAMESPACE')
+    os_namespace='demo'
+    pv_Docker_Reg = 'default-route-openshift-image-registry.apps.ocp4ignite.ca.dst.ibm.com'
+    Img_Space = 'demo'
     App_Name = 'demoapp'
     Rel_Name = 'latest'
   }
