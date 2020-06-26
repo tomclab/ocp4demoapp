@@ -59,7 +59,7 @@ pipeline {
   }
   environment {
     scan_img = 'false'
-    ocp_server = credentials('OCP_SERVER')
+    ocp_server = credentials('OCP_SERVER')//api.ocp4ignite.ca.dst.ibm.com
     ocp_port = '6443'
     ocp_user = credentials('OCP_USER')
     ocp_pass = credentials('OCP_PASS') 
