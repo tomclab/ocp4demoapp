@@ -55,7 +55,7 @@ pipeline {
   }
   post { 
         always { 
-            sh 'docker logout $pv_Docker_Reg || true'
+            sh 'docker logout $dc_server|| true'
             sh 'oc logout || true'
         }
   }
