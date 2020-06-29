@@ -10,7 +10,7 @@ metadata:
 spec:
   rules:
   # FQDN name need to set in hosts file that can match with hyproxy load balancer
-  - host: demoapp-igfdemo.apps.ocp4s.ca.dst.ibm.com
+  - host: demoapp-igfdemo.apps.ocp4ignite.ca.dst.ibm.com
   #- host: mytest.com
     http:
      paths:

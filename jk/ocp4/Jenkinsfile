@@ -61,14 +61,14 @@ pipeline {
   }
   environment {
     scan_img = 'false'
-    os_server = credentials('OCP_SERVER') //'https://api.ocp4mcm.ca.dst.ibm.com'
+    os_server = credentials('OCP_SERVER') //'https://api.ocp4ignite.ca.dst.ibm.com'
     os_port = '6443'
     os_user = credentials('OCP_USER')
     os_pass = credentials('OCP_PASS')
     os_namespace=credentials('OCP_NAMESPACE')
     dc_user = credentials('DC_USER')
     dc_pass = credentials('DC_PASS')
-    dc_server = credentials('DC_SERVER')//'default-route-openshift-image-registry.apps.ocp4mcm.ca.dst.ibm.com'
+    dc_server = credentials('DC_SERVER')//'default-route-openshift-image-registry.apps.ocp4ignite.ca.dst.ibm.com'
     //pv_Docker_Reg = 'default-route-openshift-image-registry.apps.ocp4mcm.ca.dst.ibm.com'
     Img_Space = 'demo'
     App_Name = 'demoapp'
