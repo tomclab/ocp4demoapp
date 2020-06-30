@@ -103,5 +103,6 @@ pipeline {
     App_Name = 'demoapp'
     Rel_Name = 'latest'
     Scan_image = 'false'
+    jcr_pass = credentials('JCR_PASS')
   }
 }
