@@ -21,13 +21,13 @@ pipeline {
          sh 'docker image prune -f'
          sh 'docker build -t $Img_Space/$App_Name:latest .'
          sh 'docker tag $Img_Space/$App_Name:latest $dc_server/$Img_Space/$App_Name:$Rel_Name'
-         sh 'docker tag $Img_Space/$App_Name:latest mkmbz079250.ca.dst.ibm.com/demoocp4demoapp:latest'
+         sh 'docker tag $Img_Space/$App_Name:latest mkmbz079250.ca.dst.ibm.com/demo/ocp4demoapp:latest'
        }
     }
     stage('Push to Registry'){
        steps{
          sh "docker login mkmbz079250.ca.dst.ibm.com -u dstdev -p '$jcr_pass'"
-         sh "docker push mkmbz079250.ca.dst.ibm.com/demoocp4demoapp"
+         sh "docker push mkmbz079250.ca.dst.ibm.com/demo/ocp4demoapp"
          sh "docker logout"
        }
     }
