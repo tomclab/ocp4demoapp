@@ -31,30 +31,30 @@ pipeline {
          sh "docker logout"
        }
     }
-    stage('Push to OCP') {
-      steps {
-        sh 'oc login $os_server:$os_port -u $os_user -p $os_pass -n $os_namespace --insecure-skip-tls-verify'
-        script{
-          octoken = sh(script: 'oc whoami -t', returnStdout: true)
-        }
-        sh "docker login $dc_server -u $dc_user -p ${octoken}"
-        sh 'docker push $dc_server/$Img_Space/$App_Name:$Rel_Name'
-        sh 'docker logout $dc_server'
-      }
-    }
-    stage('OCP_Deploy') {
-      steps {
-        dir(path: 'kbdeploy/ocp4') {
-          //sh 'oc login $os_server:$os_port -u $os_user -p $os_pass -n $os_namespace --insecure-skip-tls-verify'
-          sh 'oc delete -f deployment.yaml || true'
-          sh 'oc delete -f service.yaml || true'
-          sh 'oc delete -f ingress.yaml || true'        
-          sh 'oc create -f deployment.yaml'
-          sh 'oc create -f service.yaml'
-          sh 'oc create -f ingress.yaml'
-        }
-      }
-    }
+//    stage('Push to OCP') {
+//     steps {
+//        sh 'oc login $os_server:$os_port -u $os_user -p $os_pass -n $os_namespace --insecure-skip-tls-verify'
+//        script{
+//          octoken = sh(script: 'oc whoami -t', returnStdout: true)
+//        }
+//        sh "docker login $dc_server -u $dc_user -p ${octoken}"
+//        sh 'docker push $dc_server/$Img_Space/$App_Name:$Rel_Name'
+//        sh 'docker logout $dc_server'
+//      }
+//    }
+//    stage('OCP_Deploy') {
+//      steps {
+//        dir(path: 'kbdeploy/ocp4') {
+//          //sh 'oc login $os_server:$os_port -u $os_user -p $os_pass -n $os_namespace --insecure-skip-tls-verify'
+//          sh 'oc delete -f deployment.yaml || true'
+//          sh 'oc delete -f service.yaml || true'
+//          sh 'oc delete -f ingress.yaml || true'        
+//          sh 'oc create -f deployment.yaml'
+//          sh 'oc create -f service.yaml'
+//          sh 'oc create -f ingress.yaml'
+//        }
+//      }
+//    }
     stage('Logout') {
       steps {
         sh 'oc logout'
