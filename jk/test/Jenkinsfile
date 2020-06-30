@@ -35,7 +35,7 @@ pipeline {
        steps{
          sh 'echo "mkmbz079250.ca.dst.ibm.com/demo/ocp4demoapp:latest" ${WORKSPACE}/Dockerfile > anchore_images'
          sh 'cat anchore_images'
-
+         anchor "anchor_images"
        }
     }
 //    stage('Push to OCP') {
