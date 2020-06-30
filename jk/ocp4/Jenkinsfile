@@ -23,7 +23,31 @@ pipeline {
          sh 'docker tag $Img_Space/$App_Name:latest $dc_server/$Img_Space/$App_Name:$Rel_Name'
        }
     }
-    stage('Push to Registry') {
+    stage('Push to Registry'){
+       steps{
+         sh "docker login mkmbz079250.ca.dst.ibm.com -u dstdev -p '$jcr_pass'"
+         sh "docker push mkmbz079250.ca.dst.ibm.com/demo/ocp4demoapp"
+         sh "docker logout"
+       }
+    }
+    stage('Scan Image'){
+       parallel{
+           stage('Constinue'){
+             steps{
+              echo "Continue, not waiting for Image Scan"
+             }
+           }
+           stage('Scan Images'){
+             steps{
+                  echo "scane result will be in Anchore report"
+                  sh 'echo "mkmbz079250.ca.dst.ibm.com/demo/ocp4demoapp:latest" ${WORKSPACE}/Dockerfile > anchore_images'
+                  sh 'cat anchore_images'
+                  anchore "anchore_images"               
+             }
+           }
+       }
+    }    
+    stage('Push to OCP') {
       steps {
         sh 'oc login $os_server:$os_port -u $os_user -p $os_pass -n $os_namespace --insecure-skip-tls-verify'
         script{
