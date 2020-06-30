@@ -38,6 +38,11 @@ pipeline {
              }
            }
            stage('Scan Images'){
+             when{
+               expression {
+                 Scan_image == 'true'
+               }
+             }
              steps{
                   echo "scane result will be in Anchore report"
                   sh 'echo "mkmbz079250.ca.dst.ibm.com/demo/ocp4demoapp:latest" ${WORKSPACE}/Dockerfile > anchore_images'
@@ -97,5 +102,6 @@ pipeline {
     Img_Space = 'demo'
     App_Name = 'demoapp'
     Rel_Name = 'latest'
+    Scan_image = 'false'
   }
 }
