@@ -45,7 +45,8 @@ pipeline {
              }
              steps{
                   echo "scane result will be in Anchore report"
-                  sh 'echo "mkmbz079250.ca.dst.ibm.com/demo/ocp4demoapp:latest" ${WORKSPACE}/Dockerfile > anchore_images'
+                //  sh 'echo "mkmbz079250.ca.dst.ibm.com/demo/ocp4demoapp:latest" ${WORKSPACE}/Dockerfile > anchore_images'
+                  sh 'echo "mkmbz079250.ca.dst.ibm.com/demo/ocp4demoapp:latest"  > anchore_images'
                   sh 'cat anchore_images'
                   anchore "anchore_images"               
              }
