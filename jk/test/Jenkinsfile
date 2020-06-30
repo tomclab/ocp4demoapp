@@ -26,7 +26,7 @@ pipeline {
     }
     stage('Push to Registry'){
        steps{
-         sh "docker login mkmbz079250.ca.dst.ibm.com -u dstdev -p $jcr_pass"
+         sh "docker login mkmbz079250.ca.dst.ibm.com -u dstdev -p '$jcr_pass'"
          sh "docker push mkmbz079250.ca.dst.ibm.com/hydrax/ocp4demoapp"
          sh "docker logout"
        }
