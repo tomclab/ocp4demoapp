@@ -62,11 +62,11 @@ pipeline {
 //        }
 //      }
 //    }
-    stage('Logout') {
-      steps {
-        sh 'oc logout'
-      }
-    }
+//    stage('Logout') {
+//      steps {
+//        sh 'oc logout'
+//      }
+//    }
   }
   post { 
         always { 
