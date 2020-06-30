@@ -32,7 +32,7 @@ pipeline {
        }
     }
     stage('Scan Image'){
-       parallel(
+       parallel{
            stage('Constinue'){
              steps{
               echo "Continue, not waiting for Image Scan"
@@ -46,7 +46,7 @@ pipeline {
                   anchore "anchore_images"               
              }
            }
-       )
+       }
     }
 //    stage('Push to OCP') {
 //     steps {
