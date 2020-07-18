@@ -21,6 +21,7 @@ pipeline {
          sh 'docker image prune -f'
          sh 'docker build -t $Img_Space/$App_Name:latest .'
          sh 'docker tag $Img_Space/$App_Name:latest $dc_server/$Img_Space/$App_Name:$Rel_Name'
+         sh 'docker tag $Img_Space/$App_Name:latest mkmbz079250.ca.dst.ibm.com/demo/ocp4demoapp:latest'
        }
     }
     stage('Push to Registry'){
@@ -38,50 +39,44 @@ pipeline {
              }
            }
            stage('Scan Images'){
-             when{
-               expression {
-                 Scan_image == 'true'
-               }
-             }
              steps{
                   echo "scane result will be in Anchore report"
-                //  sh 'echo "mkmbz079250.ca.dst.ibm.com/demo/ocp4demoapp:latest" ${WORKSPACE}/Dockerfile > anchore_images'
-                  sh 'echo "mkmbz079250.ca.dst.ibm.com/demo/ocp4demoapp:latest"  > anchore_images'
+                  sh 'echo "mkmbz079250.ca.dst.ibm.com/demo/ocp4demoapp:latest" ${WORKSPACE}/Dockerfile > anchore_images'
                   sh 'cat anchore_images'
                   anchore "anchore_images"               
              }
            }
        }
-    }    
-    stage('Push to OCP') {
-      steps {
-        sh 'oc login $os_server:$os_port -u $os_user -p $os_pass -n $os_namespace --insecure-skip-tls-verify'
-        script{
-          octoken = sh(script: 'oc whoami -t', returnStdout: true)
-        }
-        sh "docker login $dc_server -u $dc_user -p ${octoken}"
-        sh 'docker push $dc_server/$Img_Space/$App_Name:$Rel_Name'
-        sh 'docker logout $dc_server'
-      }
     }
-    stage('OCP_Deploy') {
-      steps {
-        dir(path: 'kbdeploy/ocp4') {
-          //sh 'oc login $os_server:$os_port -u $os_user -p $os_pass -n $os_namespace --insecure-skip-tls-verify'
-          sh 'oc delete -f deployment.yaml || true'
-          sh 'oc delete -f service.yaml || true'
-          sh 'oc delete -f ingress.yaml || true'        
-          sh 'oc create -f deployment.yaml'
-          sh 'oc create -f service.yaml'
-          sh 'oc create -f ingress.yaml'
-        }
-      }
-    }
-    stage('Logout') {
-      steps {
-        sh 'oc logout'
-      }
-    }
+//    stage('Push to OCP') {
+//     steps {
+//        sh 'oc login $os_server:$os_port -u $os_user -p $os_pass -n $os_namespace --insecure-skip-tls-verify'
+//        script{
+//          octoken = sh(script: 'oc whoami -t', returnStdout: true)
+//        }
+//        sh "docker login $dc_server -u $dc_user -p ${octoken}"
+//        sh 'docker push $dc_server/$Img_Space/$App_Name:$Rel_Name'
+//        sh 'docker logout $dc_server'
+//      }
+//    }
+//    stage('OCP_Deploy') {
+//      steps {
+//        dir(path: 'kbdeploy/ocp4') {
+//          //sh 'oc login $os_server:$os_port -u $os_user -p $os_pass -n $os_namespace --insecure-skip-tls-verify'
+//          sh 'oc delete -f deployment.yaml || true'
+//          sh 'oc delete -f service.yaml || true'
+//          sh 'oc delete -f ingress.yaml || true'        
+//          sh 'oc create -f deployment.yaml'
+//          sh 'oc create -f service.yaml'
+//          sh 'oc create -f ingress.yaml'
+//        }
+//      }
+//    }
+//    stage('Logout') {
+//      steps {
+//        sh 'oc logout'
+//      }
+//    }
   }
   post { 
         always { 
@@ -103,7 +98,6 @@ pipeline {
     Img_Space = 'demo'
     App_Name = 'demoapp'
     Rel_Name = 'latest'
-    Scan_image = 'true'
     jcr_pass = credentials('JCR_PASS')
   }
 }

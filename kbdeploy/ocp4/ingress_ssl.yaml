@@ -11,7 +11,7 @@ spec:
   # crt and key need to upload and create a k8secret call 'ca-tls-secret' in ocp first
   tls:
     - hosts:
-        - demoapp-igfdemo.apps.ocp4s.ca.dst.ibm.com
+        - demoapp.apps.ocp4s.ca.dst.ibm.com
       secretName: ca-tls-secret
   rules:
   # FQDN name need to set in hosts file that can match with hyproxy load balancer
